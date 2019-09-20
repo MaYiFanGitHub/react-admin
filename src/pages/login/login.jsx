@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Form, Icon, Input, Button, message } from 'antd'
 
 import './css/login.less'
-import logo from './images/logo.png'
+import logo from '../../assets/images/logo.png'
 import userUtil from '../../utils/MemoryUtils'
 import store from '../../utils/LocalStorageUtil'
 import { reqLogin } from '../../api'
