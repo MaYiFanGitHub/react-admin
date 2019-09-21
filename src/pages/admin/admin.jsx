@@ -16,11 +16,11 @@ import Line from '../charts/line'
 import Pie from '../charts/pie'
 
 
-const { Header, Footer, Sider, Content } = Layout;
+const { Footer, Sider, Content } = Layout;
 
 export default class Admin extends Component {
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     /* 
       判断用户是否已经登录
     */
@@ -36,9 +36,7 @@ export default class Admin extends Component {
             <LeftNav></LeftNav>
           </Sider>
           <Layout>
-            <Header style={{ backgroundColor: "#fff", height: 80 }}>
-              <AdminHeader></AdminHeader>
-            </Header>
+            <AdminHeader></AdminHeader>
             <Content style={{ margin: 15, backgroundColor: '#fff', marginBottom: 0 }} >
               <Switch>
                 <Route path="/home" component={Home} />
