@@ -19,14 +19,16 @@ class LeftNav extends Component {
       if (!item.children) {
         pre.push((
           <Item key={item.key}>
-            <Icon type={item.icon} />
-            <span>{item.title}</span>
+            <Link to={item.key}>
+              <Icon type={item.icon} />
+              <span>{item.title}</span>
+            </Link>
           </Item>
         ))
         return pre;
       } else { // SubItem
-        
-        if (item.children.some( item => openKey === item.key)) {
+
+        if (item.children.some(item => openKey === item.key)) {
           this.openKey = item.key
         }
         pre.push((
@@ -54,8 +56,10 @@ class LeftNav extends Component {
       if (!item.children) { // 当前为 Item 项
         return (
           <Item key={item.key}>
-            <Icon type={item.icon} />
-            <span>{item.title}</span>
+            <Link to={item.key}>
+              <Icon type={item.icon} />
+              <span>{item.title}</span>
+            </Link>
           </Item>
         )
       } else { // 当前为 SubItem 项
@@ -75,9 +79,17 @@ class LeftNav extends Component {
       }
     })
   }
+
+  /* 
+    在第一次render之前执行
+    为第一次render执行同步的操作（准备数据）
+  */
+  componentWillMount() {
+    this.getMenuNodes = this.getMenuNodes1(menuList)
+  }
   render() {
     const SelectedKey = this.props.location.pathname
-    const getMenuNodes = this.getMenuNodes1(menuList)
+    const getMenuNodes = this.getMenuNodes
     const openKey = this.openKey
 
     return (
