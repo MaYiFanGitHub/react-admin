@@ -60,8 +60,6 @@ class Header extends Component {
           dayPictureUrl,
           weather
         })
-
-        console.log(dayPictureUrl, weather)
       }
     })
   }

@@ -1,6 +1,6 @@
 import ajax from './ajax'
 
-// 登录请求
+// 登录
 export const reqLogin = (username, password) => ajax({
   method: 'POST',
   url: '/login',
@@ -10,11 +10,29 @@ export const reqLogin = (username, password) => ajax({
   }
 })
 
-export const reqLogin1 = (user_username, user_passowrd) => ajax({
-  method: "POST",
+/* 
+  获取所有分类
+*/
+export const reqCategory = () => ajax.get('/manage/category/list')
+
+/* 
+  添加分类
+*/
+export const reqAddCategory = (categoryName) => ajax.post('/manage/category/add', {
+  categoryName
+})
+
+/* 
+  修改分类
+*/
+export const reqUpdateCategory = ({
+  categoryId,
+  categoryName
+}) => ajax({
+  method: 'POST',
+  url: '/manage/category/update',
   data: {
-    user_username,
-    user_passowrd
-  },
-  url: '/login_user'
+    categoryId,
+    categoryName
+  }
 })
