@@ -42,8 +42,10 @@ export default class Category extends Component {
           this.setState({
             showStatus: 0
           })
+          console.log('添加成功： ' + this.form.getFieldValue('categoryName'))
         } else { // 添加失败
           message.error(result.msg || '添加失败')
+          console.log('添加失败： ' + this.form.getFieldValue('categoryName'))
         }
       }
     })
@@ -53,7 +55,6 @@ export default class Category extends Component {
   updateCategory = () => {
     this.form.validateFields(async (err, values) => {
       if (!err) {
-
         // 获取到当前的ID
         values.categoryId = this.category._id
         console.log(values)
@@ -64,8 +65,10 @@ export default class Category extends Component {
           this.setState({
             showStatus: 0
           })
+          console.log('更新成功： ' + this.form.getFieldValue('categoryName'))
         } else { // 修改失败
           message.error(result.msg || '修改失败')
+          console.log('更新失败： ' + this.form.getFieldValue('categoryName'))
         }
       }
     })
@@ -93,6 +96,7 @@ export default class Category extends Component {
     })
     // 初始化 form 表单
     this.form.resetFields()
+    console.log('关闭对话框： ' + this.form.getFieldValue('categoryName'))
   }
 
   componentWillMount() {
@@ -133,8 +137,9 @@ export default class Category extends Component {
           columns={this.columns}
           bordered
           rowKey="_id"
-          pagination={{ defaultPageSize: 4, showQuickJumper: true }}
+          pagination={{ defaultPageSize: 8, showQuickJumper: true }}
           loading={loading}
+          style={{ width: 900, margin: '0 auto' }}
         />
         <Modal
           title="添加分类"

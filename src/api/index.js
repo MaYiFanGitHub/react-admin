@@ -36,3 +36,32 @@ export const reqUpdateCategory = ({
     categoryName
   }
 })
+
+/* 
+  获取商品分页列表
+*/
+export const reqProducts = (pageNum, pageSize) => ajax.get(
+  '/manage/product/list', {
+    params: {
+      pageNum,
+      pageSize
+    }
+  }
+)
+/* 
+  根据Name/desc搜索产品分页列表
+*/
+export const reqSearchProducts = ({
+  pageNum,
+  pageSize,
+  searchType,
+  searchName
+}) => ajax.get(
+  '/manage/product/search', {
+    params: {
+      pageNum,
+      pageSize,
+      [searchType]: searchName
+    }
+  }
+)
