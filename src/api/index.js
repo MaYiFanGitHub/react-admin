@@ -65,3 +65,29 @@ export const reqSearchProducts = ({
     }
   }
 )
+
+/* 
+  对商品进行上架/下架处理
+*/
+export const reqUpdateStatus = (productId, status) => ajax.post(
+  '/manage/product/updateStatus', {
+    productId,
+    status
+  }
+)
+
+/* 
+  根据商品ID获取商品
+*/
+export const reqProduct = (productId) => ajax({
+  method: 'GET',
+  url: '/manage/product/info',
+  params: {
+    productId
+  }
+})
+
+/* 
+  根据ID获取分类名称
+*/
+export const reqCategoryById = (categoryId) => ajax.get('/manage/category/info', { params: {categoryId} })

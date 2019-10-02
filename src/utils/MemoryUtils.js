@@ -4,5 +4,6 @@ import store from 'store'
 */
 
 export default {
-  user: store.get('user_key') || {}
+  user: store.get('user_key') || {}, // 用户登录的信息
+  product: {}, // 商品信息
 }

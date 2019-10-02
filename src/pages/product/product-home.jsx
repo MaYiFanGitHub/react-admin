@@ -4,10 +4,12 @@ import {
   Select,
   Input,
   Button,
-  Table
+  Table,
+  message
 } from 'antd'
 
-import { reqProducts, reqSearchProducts } from '../../api'
+import { reqProducts, reqSearchProducts, reqUpdateStatus } from '../../api'
+import MemoryUtils from '../../utils/MemoryUtils'
 
 const { Option } = Select
 
@@ -23,12 +25,15 @@ export default class ProductHome extends Component {
     分页获取商品列表
   */
   getProducts = async (pageNum) => {
+    const { searchType, searchName } = this.state // 搜索类型和搜索内容
+    let result;  // 发送 ajax 请求后的结果
+
     this.current = pageNum; // 保存当前页
-    let result;
-    if (!this.search) {
+
+    if (!this.search && this.searchName) {
       result = await reqProducts(pageNum, 2)
     } else {
-      const { searchType, searchName } = this.state
+
       result = await reqSearchProducts({ pageNum, pageSize: 2, searchType, searchName })
     }
 
@@ -37,6 +42,19 @@ export default class ProductHome extends Component {
         products: result.data.list,
         total: result.data.total
       })
+    }
+  }
+
+  /* 
+    更新商品状态
+  */
+  updateStatus = async (productId, status) => {
+    const result = await reqUpdateStatus(productId, status)
+    if (result.status === 0) {
+      message.success('更新成功！')
+      this.getProducts(this.current)
+    } else {
+      message.error('更新失败！')
     }
   }
 
@@ -58,20 +76,51 @@ export default class ProductHome extends Component {
       {
         title: '状态',
         width: 100,
-        render: () => (
-          <>
-            <Button type="primary">下架</Button>
-            <span>在售</span>
-          </>
-        )
+        render: ({ _id, status }) => {
+
+          let btnText = '上架'
+          let text = '已下架'
+
+          if (status === 2) {
+            btnText = '下架'
+            text = '在售'
+          }
+
+          return (
+            <>
+              <Button
+                type="primary"
+                onClick={() => this.updateStatus(_id, status === 1 ? 2 : 1)}
+              >
+                {btnText}
+              </Button>
+              <span>{text}</span>
+            </>
+          )
+        }
       },
       {
         title: '操作',
         width: 100,
-        render: () => (
+        render: (product) => (
           <>
-            <Button type="link">详情</Button>
-            <Button type="link">修改</Button>
+            <Button
+              type="link"
+              onClick={() => {
+                MemoryUtils.product = product
+                this.props.history.push(`/product/detail/${product._id}`)
+              }}
+            >
+              详情
+            </Button>
+            <Button 
+              type="link"
+              onClick={ () => {
+                this.props.history.push('/product/addupdate', product)
+              }}
+            >
+              修改
+            </Button>
           </>
         )
       }
@@ -88,22 +137,22 @@ export default class ProductHome extends Component {
 
     const title = (
       <div>
-        <Select 
+        <Select
           value={searchType}
-          onChange={ (value) => this.setState({ searchType: value})}
+          onChange={(value) => this.setState({ searchType: value })}
         >
           <Option key="1" value="productName">按名称搜索</Option>
           <Option key="2" value="productDesc">按描述搜索</Option>
         </Select>
-        <Input 
-          placeholder="请输入名称进行搜索" 
-          style={{ width: 200, margin: '0 15px' }} 
+        <Input
+          placeholder="请输入名称进行搜索"
+          style={{ width: 200, margin: '0 15px' }}
           value={searchName}
-          onChange={ (e) => this.setState({ searchName: e.target.value})}
+          onChange={(e) => this.setState({ searchName: e.target.value })}
         />
-        <Button 
+        <Button
           type="primary"
-          onClick= { () => {
+          onClick={() => {
             this.search = true // 判断是否点击了搜索按钮
             this.getProducts(1)
           }}
@@ -113,7 +162,7 @@ export default class ProductHome extends Component {
       </div>
     )
     const extra = (
-      <Button type="primary" icon="plus">添加</Button>
+      <Button type="primary" icon="plus" onClick={() => this.props.history.push('/product/addupdate')}>添加</Button>
     )
 
     return (
