@@ -10,6 +10,7 @@ import {
 
 import { reqProducts, reqSearchProducts, reqUpdateStatus } from '../../api'
 import MemoryUtils from '../../utils/MemoryUtils'
+import { PAGE_SIZE } from '../../utils/constants'
 
 const { Option } = Select
 
@@ -18,7 +19,8 @@ export default class ProductHome extends Component {
     products: [], // 商品列表
     total: 0, // 商品总数
     searchType: 'productName', // 搜索类型
-    searchName: '' // 搜索名
+    searchName: '', // 搜索名
+    loading: true
   }
 
   /* 
@@ -27,20 +29,21 @@ export default class ProductHome extends Component {
   getProducts = async (pageNum) => {
     const { searchType, searchName } = this.state // 搜索类型和搜索内容
     let result;  // 发送 ajax 请求后的结果
-
     this.current = pageNum; // 保存当前页
-
-    if (!this.search && this.searchName) {
-      result = await reqProducts(pageNum, 2)
+    this.setState({ // 设置加载效果
+      loading: true
+    })
+    if (!this.search && !this.searchName) {
+      result = await reqProducts(pageNum, PAGE_SIZE)
     } else {
-
-      result = await reqSearchProducts({ pageNum, pageSize: 2, searchType, searchName })
+      result = await reqSearchProducts({ pageNum, pageSize: PAGE_SIZE, searchType, searchName })
     }
 
     if (result.status === 0) {
       this.setState({
         products: result.data.list,
-        total: result.data.total
+        total: result.data.total,
+        loading: false // 取消加载效果
       })
     }
   }
@@ -50,6 +53,9 @@ export default class ProductHome extends Component {
   */
   updateStatus = async (productId, status) => {
     const result = await reqUpdateStatus(productId, status)
+    this.setState({ // 设置加载效果
+      loading: true
+    })
     if (result.status === 0) {
       message.success('更新成功！')
       this.getProducts(this.current)
@@ -133,7 +139,7 @@ export default class ProductHome extends Component {
   }
 
   render() {
-    const { products, total, searchType, searchName } = this.state
+    const { products, total, searchType, searchName, loading } = this.state
 
     const title = (
       <div>
@@ -175,8 +181,9 @@ export default class ProductHome extends Component {
           columns={this.columns}
           bordered
           rowKey="_id"
+          loading={loading}
           pagination={{
-            pageSize: 3,
+            pageSize: PAGE_SIZE,
             total,
             onChange: this.getProducts,
             current: this.current

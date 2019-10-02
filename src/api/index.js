@@ -90,4 +90,25 @@ export const reqProduct = (productId) => ajax({
 /* 
   根据ID获取分类名称
 */
-export const reqCategoryById = (categoryId) => ajax.get('/manage/category/info', { params: {categoryId} })
+export const reqCategoryById = (categoryId) => ajax.get('/manage/category/info', {
+  params: {
+    categoryId
+  }
+})
+
+/* e
+  根据 图片名称 删除图片
+*/
+export const reqDeletePicture = (name) => ajax.post(
+  '/manage/img/delete', {
+    name
+  }
+)
+
+/* 
+  添加或修改商品
+*/
+export const reqAddOrUpdateProduct = (product) => ajax.post(
+  '/manage/product/' + (product._id ? 'update' : 'add'), 
+  product
+)

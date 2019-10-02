@@ -4,6 +4,7 @@ import { Card, Button, List } from 'antd'
 import MemoryUtils from '../../utils/MemoryUtils'
 import { reqProduct, reqCategoryById } from '../../api'
 import './product.less'
+import { IMG_BASE_URL } from '../../utils/constants'
 
 const { Item } = List
 
@@ -84,7 +85,7 @@ export default class ProductDetail extends Component {
             <span className="detail-imgs">
               {
                 product.imgs && product.imgs.map(item => (
-                  <img src={'http://localhost:5000/upload/' + item} key={item} alt="img" />
+                  <img src={IMG_BASE_URL + item} key={item} alt="img" />
                 ))
               }
             </span>

@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
-import { Card, Button, Form, Input, Select } from 'antd'
-import { reqCategory } from '../../api'
+import { Card, Button, Form, Input, Select, message } from 'antd'
+
+import PicturesWall from './pictures-wall'
+import RichTextEditor from './rich-text-editor'
+import { reqCategory, reqAddOrUpdateProduct } from '../../api'
 
 const { Item } = Form
 const { Option } = Select
@@ -10,6 +13,9 @@ class ProductAddUpdate extends Component {
   state = {
     categories: []
   }
+  // PicturesWall 组件 实例对象
+  picRef = React.createRef()
+  richRef = React.createRef()
 
   /* 
     表单提交
@@ -17,9 +23,32 @@ class ProductAddUpdate extends Component {
   handleSubmit = (event) => {
     // 取消默认事件
     event.preventDefault()
-    this.props.form.validateFields((err, values) => {
+    this.props.form.validateFields( async (err, values) => {
       if (!err) {
-        console.log(values)
+        // 获取 分类ID， 商品名称， 商品描述，商品价格
+        let product = values;
+        // 得到 商品图片
+        product.imgs = this.picRef.current.getImgNameList();
+        // 得到 商品详情
+        product.detail = this.richRef.current.getDetail();
+        
+        // 判断当前是添加商品还是更新商品
+        if (this.props.location.state) {
+          // 更新商品
+          product._id = this.props.location.state._id;
+        }
+
+        // 发送请求
+        const result = await reqAddOrUpdateProduct(product)
+        if (result.status === 0) {
+          // 操作成功
+          message.success('操作成功')
+          this.props.history.replace('/product')
+        } else {
+          // 操作失败
+          message.error('操作失败')
+        }
+
       }
     })
   }
@@ -64,7 +93,7 @@ class ProductAddUpdate extends Component {
       </>
     )
     const FormLayout = {
-      labelCol: { span: 3 },
+      labelCol: { span: 2 },
       wrapperCol: { span: 8 }
     }
     return (
@@ -124,16 +153,16 @@ class ProductAddUpdate extends Component {
               )
             }
           </Item>
-          <Item label="商品图片">
-            商品图片
+          <Item label="商品图片" wrapperCol={{ span: 12 }}>
+            <PicturesWall imgs={product.imgs} ref={this.picRef} />
           </Item>
-          <Item label="商品详情">
-            商品详情
+          <Item label="商品详情" wrapperCol={{ span: 20 }}>
+            <RichTextEditor ref={this.richRef} detail={product.desc}></RichTextEditor>
           </Item>
           <Item>
-            <Button type="primary" htmlType="submit">添加</Button>
+            <Button type="primary" htmlType="submit">提交</Button>
           </Item>
-        </Form>
+        </Form>  
       </Card>
     )
   }
