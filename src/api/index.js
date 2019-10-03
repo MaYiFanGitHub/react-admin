@@ -112,3 +112,17 @@ export const reqAddOrUpdateProduct = (product) => ajax.post(
   '/manage/product/' + (product._id ? 'update' : 'add'), 
   product
 )
+
+/* 
+  查询角色列表
+*/
+export const reqRoleList = () => ajax.get('/manage/role/list')
+/* 
+  添加角色
+*/
+export const reqAddRole = (roleName) => ajax.post(
+  '/manage/role/add',
+  {
+    roleName
+  }
+)
