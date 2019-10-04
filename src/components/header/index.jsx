@@ -82,14 +82,14 @@ class Header extends Component {
     })
   }
 
-  UNSAFE_componentWillMount() {
+  componentWillMount() {
     // 获取登录的用户信息
     this.getLoginUser()
   }
 
   componentDidMount() {
     // 异步获取当前的天气
-    this.getWeather('北京');
+    this.getWeather('秦皇岛');
     // 显示当前的时间
     this.getTime()
   }

@@ -4,22 +4,25 @@ import { Card, Button, Table, Modal, message } from 'antd'
 import { formatTime } from '../../utils/TimeUtil'
 import AddForm from './add-form'
 import UpdateForm from './update-form'
-import { reqRoleList, reqAddRole } from '../../api'
+import { reqRoleList, reqAddRole, reqUpdateRole } from '../../api'
 import { PAGE_SIZE } from '../../utils/constants'
+import MemoryUtils from '../../utils/MemoryUtils'
 
-export default class Home extends Component {
-  state = {
-    roleList: [],
-    addRoleModal: false, // 添加角色对话框
-    addAuthModal: false, // 权限对话框
+export default class role extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      roleList: [],
+      addRoleModal: false, // 添加角色对话框
+      addAuthModal: false, // 权限对话框
+    }
+    this.authRef = React.createRef();
   }
-
-  setAuthComponent = React.createRef();
 
   /* 
     获取角色列表
   */
-  getRoleList = async () => {
+  getRoleList = async () => { 
     const result = await reqRoleList()
     if (result.status === 0) {
       this.setState({
@@ -68,24 +71,46 @@ export default class Home extends Component {
     })
   }
 
+
+
   /* 
     设置权限
   */
-  addAuth = () => {
-    console.log(this.auth)
+  addAuth = async () => {
+    // 获取ID
+    const _id = this.auth._id;
     // 权限列表
-    console.log(this.setAuthComponent.current.getAuthList())
+    const menus = this.authRef.current.getAuthList()
+    // 获取当前登录的用户
+    const auth_name = MemoryUtils.user.username;
+    // 生成时间
+    const auth_time = Date.now()
+    const result = await reqUpdateRole({ _id, menus, auth_name, auth_time })
+
+    if (result.status === 0) {
+      this.setState({
+        addAuthModal: false
+      })
+      message.success('设置成功')
+      this.getRoleList()
+    } else {
+      message.error('设置失败')
+    }
   }
 
   /* 
     取消对话框的显示
   */
-  handleCancel = () => {
+  AddCancel = () => {
     this.setState({
       addRoleModal: false,
+    })
+    this.addForm.resetFields() // 表单重置
+  }
+  UpdateCancel = () => {
+    this.setState({
       addAuthModal: false
     })
-    //this.addForm.resetFields() // 表单重置
   }
 
   componentDidMount() {
@@ -130,6 +155,7 @@ export default class Home extends Component {
     const { roleList, addRoleModal, addAuthModal } = this.state
     const title = <Button type="primary" onClick={this.showRoleModal}>创建角色</Button>
     const columns = this.columns
+    const auth = this.auth || {}
 
     return (
       <Card title={title}>
@@ -145,17 +171,17 @@ export default class Home extends Component {
           title="添加角色"
           visible={addRoleModal}
           onOk={this.addRole}
-          onCancel={this.handleCancel}
+          onCancel={this.AddCancel}
         >
           <AddForm getAddForm={(form) => this.addForm = form}></AddForm>
         </Modal>
         <Modal
-          title="设置权限"
+          title={`设置 ${auth.name} 权限`}
           visible={addAuthModal}
           onOk={this.addAuth}
-          onCancel={this.handleCancel}
+          onCancel={this.UpdateCancel}
         >
-          <UpdateForm auth={this.auth} ref={this.setAuthComponent} />
+          <UpdateForm auth={auth} ref={this.authRef} />
         </Modal>
       </Card>
     )

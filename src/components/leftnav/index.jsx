@@ -5,47 +5,72 @@ import { Menu, Icon } from 'antd';
 import './leftnav.less'
 import logo from '../../assets/images/logo.png'
 import menuList from '../../config/MenuConfig'
+import MemoryUtil from '../../utils/MemoryUtils'
 
 const { SubMenu, Item } = Menu;
 
 class LeftNav extends Component {
 
+  // 判断当前用户是否有权限
+  hasAuth = (item) => {
+    // 取出当前登录的用户
+    const user = MemoryUtil.user
+    // 取出当前用户拥有的权限列表
+    const authList = user.role.menus
+    /* 
+      1. 当前用户为 admin
+      2. 当前用户有权限访问
+      3. 当前菜单项是否为公开的
+    */
+
+    if (user.username === 'admin' || item.isPublic || authList.indexOf(item.key) !== -1) {
+      return true
+    } else if (item.children) {
+      return item.children.some(menu => authList.indexOf(menu.key))
+    }
+
+  }
+
   // reduce + 递归
   getMenuNodes1 = (menuList) => {
-
     const openKey = this.props.location.pathname
 
     return menuList.reduce((pre, item) => {
-      if (!item.children) {
-        pre.push((
-          <Item key={item.key}>
-            <Link to={item.key}>
-              <Icon type={item.icon} />
-              <span>{item.title}</span>
-            </Link>
-          </Item>
-        ))
-        return pre;
-      } else { // SubItem
 
-        if (item.children.some(item => openKey === item.key)) {
-          this.openKey = item.key
-        }
-        pre.push((
-          <SubMenu
-            key={item.key}
-            title={
-              <span>
+      if (this.hasAuth(item)) {
+        if (!item.children) { // 当前就一级菜单
+          pre.push((
+            <Item key={item.key}>
+              <Link to={item.key}>
                 <Icon type={item.icon} />
                 <span>{item.title}</span>
-              </span>
-            }
-          >
-            {this.getMenuNodes1(item.children)}
-          </SubMenu>
-        ))
-        return pre;
+              </Link>
+            </Item>
+          ))
+        } else { // 有子菜单
+          if (item.children.some(item => openKey === item.key)) {
+            this.openKey = item.key
+          }
+          pre.push((
+            <SubMenu
+              key={item.key}
+              title={
+                <span>
+                  <Icon type={item.icon} />
+                  <span>{item.title}</span>
+                </span>
+              }
+            >
+              {this.getMenuNodes1(item.children)}
+            </SubMenu>
+          ))
+        }
       }
+
+
+
+
+      return pre;
     }, [])
   }
 
@@ -84,7 +109,7 @@ class LeftNav extends Component {
     在第一次render之前执行
     为第一次render执行同步的操作（准备数据）
   */
-  UNSAFE_componentWillMount() {
+  componentWillMount() {
     this.getMenuNodes = this.getMenuNodes1(menuList)
   }
   render() {

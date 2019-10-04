@@ -20,15 +20,13 @@ const { Footer, Sider, Content } = Layout;
 
 export default class Admin extends Component {
 
-  UNSAFE_componentWillMount() {
-    /* 
-      判断用户是否已经登录
-    */
+  render() {
+    // 判断当前用户是否已经登录
     if (!userUtil.user._id) {
       this.props.history.replace('/login')
+      return null
     }
-  }
-  render() {
+    
     return (
       <div className="admin">
         <Layout>

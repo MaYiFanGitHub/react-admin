@@ -10,7 +10,6 @@ import { reqLogin } from '../../api'
 
 
 class Login extends Component {
-
   // 提交表单
   handleSubmit = (event) => {
     event.preventDefault()

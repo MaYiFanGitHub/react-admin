@@ -6,11 +6,12 @@ import MenuList from '../../config/MenuConfig'
 const { Item } = Form
 const { TreeNode } = Tree
 
-class UpdateForm extends Component {
+export default class UpdateForm extends Component {
   state = {
     authList: this.props.auth.menus
   }
-  /*  */
+
+  /* 生成权限菜单节点 */
   getAuthListNode = (menuList) => {
     return menuList.map(menu => (
       <TreeNode title={menu.title} key={menu.key}>
@@ -20,6 +21,7 @@ class UpdateForm extends Component {
       </TreeNode>
     ))
   }
+  /* 更新权限列表 */
   onCheck = (authList) => {
     this.setState({
       authList
@@ -32,14 +34,12 @@ class UpdateForm extends Component {
   getAuthList = () => this.state.authList
 
   componentWillReceiveProps(props) {
-    console.log(props)
     this.setState({
       authList: props.auth.menus
     })
   }
   render() {
     const { authList } = this.state
-    const getFieldDecorator = this.props.form.getFieldDecorator
     const FormLayout = {
       labelCol: { span: 4 },
       wrapperCol: { span: 18 }
@@ -48,32 +48,23 @@ class UpdateForm extends Component {
       <>
         <Form {...FormLayout}>
           <Item label="角色名称">
-            {
-              getFieldDecorator('name', {
-                initialValue: this.props.auth.name
-              })(
-                <Input disabled></Input>
-              )
-            }
-          </Item>
-          <Item>
-            <Tree
-              checkable
-              checkedKeys={authList}
-              defaultExpandAll
-              onCheck={this.onCheck}
-            >
-              <TreeNode title="平台权限" key="all">
-                {
-                  this.getAuthListNode(MenuList)
-                }
-              </TreeNode>
-            </Tree>
+            <Input disabled value={this.props.auth.name}></Input>
           </Item>
         </Form>
+        <Tree
+          checkable
+          checkedKeys={authList}
+          defaultExpandAll
+          onCheck={this.onCheck}
+        >
+          <TreeNode title="平台权限" key="all">
+            {
+              this.getAuthListNode(MenuList)
+            }
+          </TreeNode>
+        </Tree>
+
       </>
     )
   }
 }
-
-export default Form.create()(UpdateForm)

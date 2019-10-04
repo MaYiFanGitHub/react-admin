@@ -109,7 +109,7 @@ export const reqDeletePicture = (name) => ajax.post(
   添加或修改商品
 */
 export const reqAddOrUpdateProduct = (product) => ajax.post(
-  '/manage/product/' + (product._id ? 'update' : 'add'), 
+  '/manage/product/' + (product._id ? 'update' : 'add'),
   product
 )
 
@@ -121,8 +121,37 @@ export const reqRoleList = () => ajax.get('/manage/role/list')
   添加角色
 */
 export const reqAddRole = (roleName) => ajax.post(
-  '/manage/role/add',
-  {
+  '/manage/role/add', {
     roleName
+  }
+)
+
+/* 
+  更新角色
+*/
+export const reqUpdateRole = (role) => ajax.post(
+  '/manage/role/update',
+  role
+)
+
+/* 
+  获取用户列表
+*/
+export const reqUserList = () => ajax.get('/manage/user/list')
+
+/* 
+  添加用户
+*/
+export const reqAddOrUpdateUser = (user) => ajax.post(
+  '/manage/user/' + (user._id ? 'update' : 'add'),
+  user
+)
+/* 
+  删除用户
+*/
+export const reqDeleteUser = (userId) => ajax.post(
+  '/manage/user/delete',
+  {
+    userId
   }
 )
