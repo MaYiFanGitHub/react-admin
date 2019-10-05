@@ -13,13 +13,17 @@ export default class UpdateForm extends Component {
 
   /* 生成权限菜单节点 */
   getAuthListNode = (menuList) => {
-    return menuList.map(menu => (
-      <TreeNode title={menu.title} key={menu.key}>
-        {
-          menu.children ? this.getAuthListNode(menu.children) : null
-        }
-      </TreeNode>
-    ))
+
+    return menuList.reduce((pre, menu) => {
+      if (!menu.isPublic) {
+        pre.push(
+          <TreeNode title={menu.title} key={menu.key}>
+            {menu.children ? this.getAuthListNode(menu.children) : null}
+          </TreeNode>
+        )
+      }
+      return pre
+    }, [])
   }
   /* 更新权限列表 */
   onCheck = (authList) => {

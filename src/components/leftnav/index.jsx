@@ -48,7 +48,7 @@ class LeftNav extends Component {
             </Item>
           ))
         } else { // 有子菜单
-          if (item.children.some(item => openKey === item.key)) {
+          if (item.children.some(item => openKey.startsWith(item.key))) {
             this.openKey = item.key
           }
           pre.push((
@@ -66,10 +66,6 @@ class LeftNav extends Component {
           ))
         }
       }
-
-
-
-
       return pre;
     }, [])
   }
@@ -113,9 +109,13 @@ class LeftNav extends Component {
     this.getMenuNodes = this.getMenuNodes1(menuList)
   }
   render() {
-    const SelectedKey = this.props.location.pathname
+    let SelectedKey = this.props.location.pathname
     const getMenuNodes = this.getMenuNodes
     const openKey = this.openKey
+
+    if (SelectedKey.startsWith('/product')) {
+      SelectedKey = '/product'
+    }
 
     return (
       <div className="left-nav">
