@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 import jsonp from 'jsonp'
 import { Button, Modal } from 'antd'
+import { connect } from 'react-redux'
 
+import { logout } from '../../redux/actions'
 import menuList from '../../config/MenuConfig'
-import MemoryUtil from '../../utils/MemoryUtils'
-import LocalStorageUtil from '../../utils/LocalStorageUtil'
 import { formatTime } from '../../utils/TimeUtil'
 import './header.less'
 
@@ -17,10 +17,6 @@ class Header extends Component {
     weather: ''
   }
 
-  // 从内存工具中取出当前登录的用户
-  getLoginUser = () => {
-    this.userName = MemoryUtil.user.username
-  }
   // 根据请求的path得到对应的标题
   getTitle = () => {
     let title = '';
@@ -72,19 +68,9 @@ class Header extends Component {
       okText: '确定',
       cancelText: '取消',
       onOk: () => {
-        // 清除本地存储
-        LocalStorageUtil.remove()
-        // 清除内存中存储的用户值
-        MemoryUtil.user = {}
-        // 跳转到login页面
-        this.props.history.replace('/login')
+        this.props.logout()
       }
     })
-  }
-
-  componentWillMount() {
-    // 获取登录的用户信息
-    this.getLoginUser()
   }
 
   componentDidMount() {
@@ -100,14 +86,16 @@ class Header extends Component {
   }
 
   render() {
-    const { userName } = this
-    const title = this.getTitle()
+    
+    const { username } = this.props.user
+    // const title = this.getTitle()
+    const title = this.props.headerTitle
     const { currentTime, dayPictureUrl, weather } = this.state
 
     return (
       <div className="header">
         <div className="header-top">
-          欢迎，{userName} &nbsp;&nbsp;
+          欢迎，{username} &nbsp;&nbsp;
           <Button type="link" onClick={this.logout}>退出</Button>
         </div>
         <div className="header-bottom">
@@ -125,4 +113,10 @@ class Header extends Component {
   }
 }
 
-export default withRouter(Header)
+export default withRouter(connect(
+  state => ({
+    headerTitle: state.headerTitle,
+    user: state.user
+  }),
+  { logout }
+)(Header))

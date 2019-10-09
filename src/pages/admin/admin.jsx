@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { Switch, Route, Redirect } from 'react-router-dom'
 import { Layout } from 'antd';
+import { connect } from 'react-redux'
 
-import userUtil from '../../utils/MemoryUtils'
+
 import './admin.less'
 import LeftNav from '../../components/leftnav'
 import AdminHeader from '../../components/header'
@@ -18,11 +19,11 @@ import Pie from '../charts/pie'
 
 const { Footer, Sider, Content } = Layout;
 
-export default class Admin extends Component {
+class Admin extends Component {
 
   render() {
     // 判断当前用户是否已经登录
-    if (!userUtil.user._id) {
+    if (!this.props.user._id) {
       this.props.history.replace('/login')
       return null
     }
@@ -55,3 +56,11 @@ export default class Admin extends Component {
     )
   }
 }
+
+
+export default connect(
+  state => ({
+    user: state.user
+  }),
+  {}
+)(Admin)

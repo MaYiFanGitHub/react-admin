@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import { Link, withRouter } from 'react-router-dom'
 import { Menu, Icon } from 'antd';
+import { connect } from 'react-redux'
 
 import './leftnav.less'
 import logo from '../../assets/images/logo.png'
 import menuList from '../../config/MenuConfig'
-import MemoryUtil from '../../utils/MemoryUtils'
+import { setHeaderTitle } from '../../redux/actions'
 
 const { SubMenu, Item } = Menu;
 
@@ -14,7 +15,7 @@ class LeftNav extends Component {
   // 判断当前用户是否有权限
   hasAuth = (item) => {
     // 取出当前登录的用户
-    const user = MemoryUtil.user
+    const user = this.props.user
     // 取出当前用户拥有的权限列表
     const authList = user.role.menus
     /* 
@@ -26,7 +27,7 @@ class LeftNav extends Component {
     if (user.username === 'admin' || item.isPublic || authList.indexOf(item.key) !== -1) {
       return true
     } else if (item.children) {
-      return item.children.some(menu => authList.indexOf(menu.key))
+      return item.children.some(menu => authList.indexOf(menu.key) === 0)
     }
 
   }
@@ -39,8 +40,12 @@ class LeftNav extends Component {
 
       if (this.hasAuth(item)) {
         if (!item.children) { // 当前就一级菜单
+          // 第一次根据访问路径初始化 redux 里面的 headerTitle值
+          if (openKey.startsWith(item.key)) {
+            this.props.setHeaderTitle(item.title)
+          }
           pre.push((
-            <Item key={item.key}>
+            <Item key={item.key} onClick={() => this.props.setHeaderTitle(item.title)}>
               <Link to={item.key}>
                 <Icon type={item.icon} />
                 <span>{item.title}</span>
@@ -140,6 +145,9 @@ class LeftNav extends Component {
   }
 }
 
-const WrappedLeftNav = withRouter(LeftNav)
-
-export default WrappedLeftNav
+export default withRouter(connect(
+  state => ({
+    user: state.user
+  }),
+  { setHeaderTitle }
+)(LeftNav))

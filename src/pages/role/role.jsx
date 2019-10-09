@@ -1,14 +1,14 @@
 import React, { Component } from 'react'
 import { Card, Button, Table, Modal, message } from 'antd'
+import { connect } from 'react-redux'
 
 import { formatTime } from '../../utils/TimeUtil'
 import AddForm from './add-form'
 import UpdateForm from './update-form'
 import { reqRoleList, reqAddRole, reqUpdateRole } from '../../api'
 import { PAGE_SIZE } from '../../utils/constants'
-import MemoryUtils from '../../utils/MemoryUtils'
 
-export default class role extends Component {
+class Role extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -82,7 +82,7 @@ export default class role extends Component {
     // 权限列表
     const menus = this.authRef.current.getAuthList()
     // 获取当前登录的用户
-    const auth_name = MemoryUtils.user.username;
+    const auth_name =this.props.user.username;
     // 生成时间
     const auth_time = Date.now()
     const result = await reqUpdateRole({ _id, menus, auth_name, auth_time })
@@ -187,3 +187,9 @@ export default class role extends Component {
     )
   }
 }
+export default connect(
+  state => ({
+    user: state.user
+  }),
+  {}
+)(Role)

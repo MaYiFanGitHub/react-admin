@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { Form, Icon, Input, Button, message } from 'antd'
+import { Form, Icon, Input, Button } from 'antd'
+import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 
+import { login } from '../../redux/actions'
 import './css/login.less'
 import logo from '../../assets/images/logo.png'
-import userUtil from '../../utils/MemoryUtils'
-import store from '../../utils/LocalStorageUtil'
-import { reqLogin } from '../../api'
 
 
 
@@ -13,25 +13,10 @@ class Login extends Component {
   // 提交表单
   handleSubmit = (event) => {
     event.preventDefault()
-    /* const { getFieldValue, getFieldsValue } = this.props.form
-    const username = getFieldValue('username')
-    const pwd = getFieldValue('password')
-    console.log(username, pwd);
-    console.log(getFieldsValue()); */
     const { validateFields } = this.props.form
     validateFields(async (err, { username, password }) => {
       if (!err) {
-        const result = await reqLogin(username, password)
-        if (result.status === 0) { // 登录成功
-          // 存储到本地存储
-          store.set(result.data)
-          // 更新存储在内存中的用户信息
-          userUtil.user = result.data
-          // 跳转到主页
-          this.props.history.replace('/')
-        } else { // 登录失败
-          message.error(result.msg)
-        }
+        this.props.login(username, password)
       }
     })
   }
@@ -53,15 +38,14 @@ class Login extends Component {
     }
   }
 
-  componentWillMount() {
+  render() {
     /* 
       判断用户是否已经登录
     */
-    if (userUtil.user._id) {
-      this.props.history.replace('/')
+    if (this.props.user._id) {
+      return <Redirect to='/'></Redirect>
     }
-  }
-  render() {
+
     const { getFieldDecorator } = this.props.form;
     return (
       <div className="login">
@@ -70,6 +54,7 @@ class Login extends Component {
           <h1>后台管理系统</h1>
         </div>
         <div className="login-content">
+          { this.props.user.msg ? <div style={{color: 'red', textAlign: 'center', position: 'absolute', left: 0, top: 0, width: '100%'}}>{this.props.user.msg}</div> : null }
           <h2>用户登录</h2>
           <Form onSubmit={this.handleSubmit} className="login-form">
             <Form.Item>
@@ -121,9 +106,12 @@ class Login extends Component {
     )
   }
 }
-
-const WrappedLogin = Form.create()(Login)
-export default WrappedLogin
+export default Form.create()(connect(
+  state => ({
+    user: state.user
+  }),
+  { login }
+)(Login))
 
 
 /*
