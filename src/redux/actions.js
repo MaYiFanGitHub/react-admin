@@ -37,6 +37,5 @@ export function login(username, password) {
     } else { // 登录失败
       dispatch(showMsg(result.msg))
     }
-    // 2. 分发同步action
   }
 }

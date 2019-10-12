@@ -15,6 +15,7 @@ import User from '../user/user'
 import Bar from '../charts/bar'
 import Line from '../charts/line'
 import Pie from '../charts/pie'
+import NotFound from '../not-found/not-found'
 
 
 const { Footer, Sider, Content } = Layout;
@@ -27,7 +28,7 @@ class Admin extends Component {
       this.props.history.replace('/login')
       return null
     }
-    
+
     return (
       <div className="admin">
         <Layout>
@@ -38,6 +39,7 @@ class Admin extends Component {
             <AdminHeader></AdminHeader>
             <Content style={{ margin: 15, backgroundColor: '#fff', marginBottom: 0 }} >
               <Switch>
+                <Redirect from="/" to="/home" exact></Redirect>
                 <Route path="/home" component={Home} />
                 <Route path='/category' component={Category} />
                 <Route path='/product' component={Product} />
@@ -46,7 +48,7 @@ class Admin extends Component {
                 <Route path='/charts/bar' component={Bar} />
                 <Route path='/charts/line' component={Line} />
                 <Route path='/charts/pie' component={Pie} />
-                <Redirect to="/home"></Redirect>
+                <Route component={NotFound}></Route>
               </Switch>
             </Content>
             <Footer style={{ textAlign: "center" }}>推荐使用谷歌浏览器进行访问</Footer>

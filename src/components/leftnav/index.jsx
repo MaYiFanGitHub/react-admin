@@ -23,11 +23,12 @@ class LeftNav extends Component {
       2. 当前用户有权限访问
       3. 当前菜单项是否为公开的
     */
-
     if (user.username === 'admin' || item.isPublic || authList.indexOf(item.key) !== -1) {
       return true
     } else if (item.children) {
-      return item.children.some(menu => authList.indexOf(menu.key) === 0)
+      return item.children.some(menu => {
+        return authList.indexOf(menu.key) > -1
+      })
     }
 
   }
@@ -37,13 +38,14 @@ class LeftNav extends Component {
     const openKey = this.props.location.pathname
 
     return menuList.reduce((pre, item) => {
-
       if (this.hasAuth(item)) {
         if (!item.children) { // 当前就一级菜单
           // 第一次根据访问路径初始化 redux 里面的 headerTitle值
+
           if (openKey.startsWith(item.key)) {
             this.props.setHeaderTitle(item.title)
           }
+
           pre.push((
             <Item key={item.key} onClick={() => this.props.setHeaderTitle(item.title)}>
               <Link to={item.key}>

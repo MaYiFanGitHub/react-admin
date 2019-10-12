@@ -7,10 +7,14 @@
 */
 import axios from 'axios'
 import qs from 'qs'
-import {message} from 'antd'
+import {
+  message
+} from 'antd'
 
 // 配置基础的URL地址
 // axios.defaults.baseURL = 'http://localhost:5000'
+axios.defaults.baseURL = process.env.NODE_ENV === 'production' ?  '/api' : ''
+
 
 // 配置请求拦截器
 axios.interceptors.request.use(config => {
